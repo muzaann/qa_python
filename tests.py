@@ -1,5 +1,5 @@
-from main import BooksCollector
 import pytest
+from main import BooksCollector
 
 
 # класс TestBooksCollector объединяет набор тестов, которыми мы покрываем наше приложение BooksCollector
@@ -26,65 +26,64 @@ class TestBooksCollector:
     # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
 
 
+    @pytest.mark.parametrize('positive_names', ['A','Десят негритят', 'Невероятная частная жизнь Максвелла Сима'])
+    def test_add_new_book_different_len_of_name(self, positive_names):
+        collector = BooksCollector()
+        collector.add_new_book(positive_names)
+        assert positive_names in collector.get_books_genre()
     def test_set_book_genre_by_real_book_name_true(self):
         collector = BooksCollector()
         collector.add_new_book('Десять негритят')
-        collector.set_book_genre('Десять негритят', 'Детектив')
-        assert ('Десять негритят': 'Детектив') in collector.books_genre
+        collector.set_book_genre('Десять негритят', 'Детективы')
+        assert collector.get_book_genre('Десять негритят') == 'Детективы'
 
     def test_set_book_genre_if_genre_not_in_genre_list_false(self):
         collector = BooksCollector()
         collector.add_new_book('Укрытие')
         collector.set_book_genre('Укрытие', 'Постапокалипсис')
-        assert ('Укрытие': 'Постапокалипсис') not in collector.books_genre
+        assert ('Укрытие', 'Постапокалипсис') not in collector.get_books_genre()
 
-    def test_get_book_genre_by_real_book_name_true(self):
-        collector = BooksCollector()
-        collector.add_new_book('Десять негритят')
-        collector.set_book_genre('Десять негритят', 'Детектив')
-        assert collector.get_book_genre('Десят негритят') == 'Детектив'
 
     def test_get_book_with_specific_genre_exicting_genre_added_book_true(self):
         collector = BooksCollector()
         collector.add_new_book('Десять негритят')
-        collector.set_book_genre('Десять негритят', 'Детектив')
-        assert collector.get_books_with_specific_genre('Детектив') == books_with_specific_genre
+        collector.set_book_genre('Десять негритят', 'Детективы')
+        assert collector.get_books_with_specific_genre('Детективы') == ['Десять негритят']
 
     def test_get_book_with_specific_genre_non_existent_genre_added_book_false(self):
         collector = BooksCollector()
         collector.add_new_book('Десять негритят')
-        collector.set_book_genre('Десять негритят', 'Детектив')
+        collector.set_book_genre('Десять негритят', 'Детективы')
         assert collector.get_books_with_specific_genre('Фэнтези') == []
 
     def test_get_books_genre_existing_book_and_genre_true(self):
         collector = BooksCollector()
         collector.add_new_book('Десять негритят')
-        collector.set_book_genre('Десять негритят', 'Детектив')
-        assert ('Десять негритят':'Детектив') in collector.books_genre
+        collector.set_book_genre('Десять негритят', 'Детективы')
+        assert collector.get_books_genre() == {'Десять негритят':'Детективы'}
 
     def test_get_books_for_children_added_valid_book_true(self):
         collector = BooksCollector()
         collector.add_new_book('Гарри Поттер и философский камень')
-        collector.set_book_genre('Гарри Поттер и философский камень','Фантастика')
+        collector.set_book_genre('Гарри Поттер и философский камень', 'Фантастика')
         assert collector.get_books_for_children() == ['Гарри Поттер и философский камень']
-
     def test_get_books_for_children_added_invalid_book_false(self):
         collector = BooksCollector()
         collector.add_new_book('Десять негритят')
-        collector.set_book_genre('Десять негритят', 'Детектив')
+        collector.set_book_genre('Десять негритят', 'Детективы')
         assert collector.get_books_for_children() != ['Десять негритят']
 
     def test_add_book_in_favorites_existing_book_true(self):
         collector = BooksCollector()
         collector.add_new_book('Десять негритят')
         collector.add_book_in_favorites('Десять негритят')
-        assert 'Десять негритят' in collector.favorites
+        assert 'Десять негритят' in collector.get_list_of_favorites_books()
 
 
     def test_add_book_in_favorites_non_existed_book_false(self):
         collector = BooksCollector()
         collector.add_book_in_favorites('Десять негритят')
-        assert 'Десять негритят' not in collector.favorites
+        assert 'Десять негритят' not in collector.get_list_of_favorites_books()
 
 
     def test_add_book_in_favorites_already_existing_book_false(self):
@@ -92,18 +91,18 @@ class TestBooksCollector:
         collector.add_new_book('Десять негритят')
         collector.add_book_in_favorites('Десять негритят')
         collector.add_book_in_favorites('Десять негритят')
-        assert len(collector.favorites) == 1
+        assert len(collector.get_list_of_favorites_books()) == 1
 
     def test_delete_book_from_favorites_existing_book_true(self):
         collector = BooksCollector()
         collector.add_new_book('Десять негритят')
         collector.add_book_in_favorites('Десять негритят')
         collector.delete_book_from_favorites('Десять негритят')
-        assert 'Десять негритят' not in collector.favorites
+        assert 'Десять негритят' not in collector.get_list_of_favorites_books()
 
 
     def test_get_list_of_favotites_books_when_books_in_list(self):
         collector = BooksCollector()
         collector.add_new_book('Десять негритят')
         collector.add_book_in_favorites('Десять негритят')
-        assert collector.favorites == ['Десять негритят']
+        assert collector.get_list_of_favorites_books() == ['Десять негритят']
